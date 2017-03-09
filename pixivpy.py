@@ -3,8 +3,6 @@
 import requests
 import re
 import os
-import datetime
-# from bs4 import BeautifulSoup, SoupStrainer
 # 排行榜默认下载文件数
 RANKING_NUM = 5
 
@@ -27,7 +25,6 @@ def printColor(content, color='WHITE', style=0):
     begin = '\033[' + s + color_num + 'm'
     end = '\033[0m'
     print(begin + content + end)
-    return
 
 
 # 登录操作 返回cookies
@@ -94,12 +91,14 @@ def ranking(num, mode, cookies):
     assert req.status_code == 200, '链接异常'
     # 这个正则匹配hhhh
     ids_pattern = re.compile(r'(?<="\sdata-id=")\d+(?=">)')
-    data_ids = re.findall(ids_pattern, req.text)
-    return data_ids[:num]
+    ids = re.findall(ids_pattern, req.text)
+    date_pattern = re.compile(r'(?<=class="current">)\d+\S*(?=</a>)')
+    date = re.findall(date_pattern, req.text)[0]
+    return ids[:num], date
 
 
 # 下载排行榜图片
-def save_ranking_img(ids, mode, multi, cookies):
+def save_ranking_img(ids, mode, multi, cookies, date_name):
     referer = 'http://www.pixiv.net/ranking.php?mode=' + mode
     headers = {
         'Referer': referer,
@@ -110,20 +109,8 @@ def save_ranking_img(ids, mode, multi, cookies):
     s = requests.Session()
     s.headers = headers
     s.cookies = requests.utils.cookiejar_from_dict(cookies)
-    # 获取日期
-    day_pattern = re.compile(r'(daily|male|female)(_r18)?')
-    week_pattern = re.compile(r'weekly(_r18)?|rookie|original')
-    today = datetime.datetime.now().today()
-    week = today - datetime.timedelta(weeks=1)
-    month = today - datetime.timedelta(days=30)
-    if re.search(day_pattern, mode):
-        date_name = today.strftime("%Y-%m-%d")
-    elif re.search(week_pattern, mode):
-        date_name = week.strftime("%Y-%m-%d") + '~' + today.strftime("%Y-%m-%d")
-    else:
-        date_name = month.strftime("%Y-%m-%d") + '~' + today.strftime("%Y-%m-%d")
 
-    printColor('开始爬取id,请稍后...', 'LIGHTBLUE')
+    printColor('开始爬取,请稍后...', 'LIGHTBLUE')
     originals = []
     multi_num = 0
     for item_id in ids:
@@ -153,7 +140,8 @@ def save_ranking_img(ids, mode, multi, cookies):
             originals.append(original_url)
         else:
             originals.append(original_url[0])
-    printColor('id爬取完毕 其中'+str(multi_num)+'个多P作品', 'LIGHTBLUE')
+    printColor('爬取完毕 其中'+str(multi_num)+'个多P作品', 'LIGHTBLUE')
+
     printColor('开始下载图片', 'LIGHTBLUE')
     mode_path = mode + '_img'
     download_path = os.path.join(mode_path, date_name)
@@ -161,9 +149,9 @@ def save_ranking_img(ids, mode, multi, cookies):
     # 创建对应日期的目录
     if not os.path.exists(download_path):
         os.makedirs(download_path)
-        printColor(date_name+'文件夹创建成功', 'LIGHTBLUE')
-    else:
+
         printColor(date_name+'文件夹已存在', 'YELLOW')
+    # 下载
     for original in originals:
         index = originals.index(original)
         if original == '':
@@ -196,24 +184,25 @@ def save_ranking_img(ids, mode, multi, cookies):
             with open(name, 'wb') as f:
                 f.write(pic.content)
         printColor(ids[index]+' done', 'GREEN')
+    printColor('下载完成', 'LIGHTBLUE')
 
 
 if __name__ == '__main__':
-    intro = '''
-=========================================================
- ____ _____  _______     ________   __
-|  _ \_ _\ \/ /_ _\ \   / /  _ \ \ / /
-| |_) | | \  / | | \ \ / /| |_) \ V /
-|  __/| | /  \ | |  \ V / |  __/ | |
-|_|  |___/_/\_\___|  \_/  |_|    |_|
-                                          by:DoSun
-=========================================================
-模式选择:(无输入则退出)
+    logo = '''
+=======================================================
+  ====== ____ _____  _______     ________   __======
+    ====|  _ \_ _\ \/ /_ _\ \   / /  _ \ \ / /====
+      ==| |_) | | \  / | | \ \ / /| |_) \ V / ==
+       =|  __/| | /  \ | |  \ V / |  __/ | |  =
+        |_|  |___/_/\_\___|  \_/  |_|    |_|
+                                            by:DoSun'''
+    intro = '''模式选择:(无输入则退出)
 daily(-r18)  --每日排行榜     weekly(_r18) --每周排行榜
 monthly      --每月排行榜     rookie       --新人排行榜
 male(_r18)   --男性向排行榜   female(_r18) --女性向排行榜
 original     --原创排行榜
-    '''
+'''
+    printColor(logo, 'BLUE', 1)
     printColor(intro, 'PURPLE', 1)
     # 登录取得cookies
     my_cookies = login()
@@ -231,5 +220,5 @@ original     --原创排行榜
         if num == '':
             num = RANKING_NUM
         num = int(num)
-        ids = ranking(num, mode, my_cookies)
-        save_ranking_img(ids, mode, multi, my_cookies)
+        ids, date = ranking(num, mode, my_cookies)
+        save_ranking_img(ids, mode, multi, my_cookies, date)
