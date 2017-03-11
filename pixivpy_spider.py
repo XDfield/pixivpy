@@ -15,8 +15,8 @@ class PixivPy:
         self.login_status_code = 200
         self.session = requests.Session()
 
-    # 登陆方法
     def login(self):
+        """执行后进行登陆,返回一个布尔值(是否登陆成功)和一个字符串(登陆界面提示信息)"""
         # 构造headers
         headers = {
             'Referer': 'https://accounts.pixiv.net/login?lang=zh&source=pc&view_type=page&ref=wwwtop_accounts_index',
@@ -27,7 +27,7 @@ class PixivPy:
         re1 = self.session.get(url=login_url1, headers=headers)
         post_key_pattern = re.compile(r'(?<=name="post_key"\svalue=")\S*(?=">)')
         post_key = re.findall(post_key_pattern, re1.text)[0]
-        # 构造data
+        # 构造dataaaaaaaaaaaaaa
         data = {
             'pixiv_id': self.pixiv_id,
             'password': self.password,
@@ -51,7 +51,7 @@ class PixivPy:
             return False, '您的账号被封锁请稍后再试'
         return False, '登陆异常'
 
-    # 设置登陆信息
     def setLoginInfo(self, pixiv_id, password):
+        """设置登陆信息(id与密码),接收两个参数(id与密码)"""
         self.pixiv_id = pixiv_id
         self.password = password
