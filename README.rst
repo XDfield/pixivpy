@@ -16,10 +16,15 @@ Requirements
 
 Start
 -----
+
 执行GUI版,命令框内输入::
+
  python pixivpy_test.py
+
 非GUI版::
+
  python pixivpy.py
+
 
 LoginActivity
 -------------
