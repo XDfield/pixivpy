@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QWidget" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>371</width>
+    <height>472</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget{
+	font-family: &quot;微软雅黑&quot;;
+	font-weight: bold;
+	display: block;
+	color: #fff
+}
+QLabel#background{
+	background-color: #fff;
+}
+QLabel#info_label{
+	background-color: rgb(32, 121, 255);
+}
+QPushButton{
+	border-radius: 3px;
+	font-size: 16px;
+}
+QCheckBox{
+	color: rgb(100, 100, 100);
+	font-size: 20px;
+	spacing: 2px
+}
+QCheckBox::indicator{
+	width: 20px;
+	height: 20px;
+}</string>
+  </property>
+  <widget class="QLabel" name="background">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>371</width>
+     <height>471</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="info_label">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>371</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="quitButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>0</y>
+     <width>101</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#quitButton{
+	background-color:#dc4e41;
+	border-bottom: 3px solid #995751;
+	border-right: 2px solid #995751;
+	border-top: 1px solid #f7bdb7;
+	border-left: 2px solid #f7bdb7;
+}
+#quitButton:pressed{
+	border: 0;
+}
+#quitButton:hover{
+	background-color: #ed8c83;
+}</string>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="settingButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>80</y>
+     <width>101</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#settingButton{
+	background-color: #7eba22;
+	border-bottom: 3px solid #66823c;
+	border-right: 2px solid #66823c;
+	border-top: 1px solid #e4f7c6;
+	border-left: 2px solid #e4f7c6;
+}
+#settingButton:pressed{
+	border: 0;
+}
+#settingButton:hover{
+	background-color: #a4d25c;
+}</string>
+   </property>
+   <property name="text">
+    <string>保存位置</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="face">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>120</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#face{
+	background-color: rgb(172, 172, 172);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="done_info">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>300</y>
+     <width>251</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#done_info{
+	background-color: rgb(170, 255, 0);
+	border-radius: 5px;
+	font-size: 20px;
+}</string>
+   </property>
+   <property name="text">
+    <string>请选择模式</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="R18">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>200</y>
+     <width>61</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#R18:hover{
+	color: #32a2e3;
+}</string>
+   </property>
+   <property name="text">
+    <string>R18</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="moreP">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>200</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#moreP:hover{
+	color: #32a2e3;	
+}</string>
+   </property>
+   <property name="text">
+    <string>同时下载多P作品</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="hello">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>20</y>
+     <width>61</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#hello{
+	font-size: 20px;
+}</string>
+   </property>
+   <property name="text">
+    <string>你好呀</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="username">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>50</y>
+     <width>140</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#username{
+	font-size: 20px;
+}</string>
+   </property>
+   <property name="text">
+    <string>username</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="mode_chose">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>150</y>
+     <width>271</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#mode_chose{
+	border-radius: 5px;
+	background-color: rgb(170, 226, 255);
+	font-size: 20px;
+	color: rgb(4, 20, 65);
+	padding: 1px 18px
+}
+#mode_chose:drop-down{
+	width: 35px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	background-color: rgb(62, 113, 175);
+}
+#mode_chose QAbstractItemView {
+	background-color: rgb(212, 237, 255);
+	selection-background-color: rgb(153, 171, 184);
+	font-size: 18px;
+	color: rgb(68, 80, 100);
+}</string>
+   </property>
+   <property name="currentText">
+    <string/>
+   </property>
+   <property name="maxVisibleItems">
+    <number>7</number>
+   </property>
+   <property name="maxCount">
+    <number>7</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="beginDownload">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>380</y>
+     <width>191</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#beginDownload{
+	background-color: rgb(25, 117, 255);
+	border-radius: 5px;
+	font-size: 20px;
+	border-right: 2px solid rgb(14, 70, 152);
+	border-left: 2px solid rgb(166, 220, 255);
+	border-top: 1px solid rgb(166, 220, 255);
+	border-bottom: 3px solid rgb(14, 70, 152);
+}
+#beginDownload:pressed{
+	border: 0;
+}
+#beginDownload:hover{
+	background-color: rgb(94, 172, 255);
+}</string>
+   </property>
+   <property name="text">
+    <string>开始下载</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="num">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>240</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#num{
+	border: 2px solid #ccc;
+	border-radius: 3px;
+	font-size: 18px;
+	color: rgb(125, 125, 125)
+}
+</string>
+   </property>
+   <property name="placeholderText">
+    <string>(默认前20)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="num_info">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>250</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#num_info{
+	color: rgb(100, 100, 100);
+	font-size: 20px;
+}</string>
+   </property>
+   <property name="text">
+    <string>前几名:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="logoutButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>40</y>
+     <width>101</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#logoutButton{
+	background-color:rgb(255, 193, 48);
+	border-bottom: 3px solid rgb(177, 134, 33);
+	border-right: 2px solid rgb(177, 134, 33);
+	border-top: 1px solid rgb(254, 255, 184);
+	border-left: 2px solid rgb(254, 255, 184);
+}
+#logoutButton:pressed{
+	border: 0;
+}
+#logoutButton:hover{
+	background-color: rgb(255, 202, 116);
+}</string>
+   </property>
+   <property name="text">
+    <string>注销</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

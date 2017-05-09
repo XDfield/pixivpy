@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>371</width>
-    <height>442</height>
+    <height>472</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,7 +39,7 @@ QLineEdit{
 	border-radius: 4px;
 	font-size: 16px;
 }
-QLineEdit:placehoder-show{
+QLineEdit:placeholder-show{
 	color: #ccc;
 }
 QPushButton{
@@ -141,7 +141,7 @@ QCheckBox#remember{
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">selection-background-color: darkgray;</string>
+    <string notr="true"/>
    </property>
    <property name="alignment">
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -153,9 +153,9 @@ QCheckBox#remember{
   <widget class="QLabel" name="logo">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>40</x>
      <y>40</y>
-     <width>181</width>
+     <width>291</width>
      <height>81</height>
     </rect>
    </property>
@@ -169,7 +169,7 @@ QCheckBox#remember{
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap resource="resource/pixiv_resource.qrc">:/login/logo.svg</pixmap>
+    <pixmap resource="resource/pixiv_resource.qrc">:/login/logo.png</pixmap>
    </property>
   </widget>
   <widget class="QLabel" name="logo_text">
@@ -182,7 +182,7 @@ QCheckBox#remember{
     </rect>
    </property>
    <property name="text">
-    <string>让创作变得更有乐趣</string>
+    <string>让爬取变得更有乐趣</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -249,7 +249,7 @@ QCheckBox#remember{
     <rect>
      <x>40</x>
      <y>260</y>
-     <width>85</width>
+     <width>121</width>
      <height>20</height>
     </rect>
    </property>
@@ -259,7 +259,7 @@ QCheckBox#remember{
 }</string>
    </property>
    <property name="text">
-    <string>自动登录</string>
+    <string>下次自动登录</string>
    </property>
   </widget>
   <widget class="QPushButton" name="forgetButton">
@@ -319,7 +319,7 @@ QCheckBox#remember{
      <x>0</x>
      <y>0</y>
      <width>371</width>
-     <height>442</height>
+     <height>472</height>
     </rect>
    </property>
    <property name="styleSheet">

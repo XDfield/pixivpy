@@ -3,6 +3,10 @@
 import requests
 import re
 import os
+import aiohttp
+import asyncio
+
+
 # 排行榜默认下载文件数
 RANKING_NUM = 5
 
@@ -94,11 +98,146 @@ def ranking(num, mode, cookies):
     ids = re.findall(ids_pattern, req.text)
     date_pattern = re.compile(r'(?<=class="current">)\d+\S*(?=</a>)')
     date = re.findall(date_pattern, req.text)[0]
-    return ids[:num], date
+    work_class_pattern = re.compile(r'(?<=class=")work\s\s_work\s(multiple\s)?(?=")')
+    work_classes = re.findall(work_class_pattern, req.text)
+    work_class = []
+    for work_type in work_classes:
+        if work_type == 'multiple ':
+            work_class.append(1)
+        else:
+            work_class.append(0)
+    return ids[:num], date, work_class[:num]
 
 
-# 下载排行榜图片
-def save_ranking_img(ids, mode, multi, cookies, date_name):
+@asyncio.coroutine
+async def get_ids_Page(url, mode, cookies, req_list):
+    referer = 'http://www.pixiv.net/ranking.php?mode=' + mode
+    headers = {
+        'Referer': referer,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/56.0.2924.87 Safari/537.36 '
+    }
+    async with aiohttp.ClientSession(cookies=cookies) as session:
+        async with session.get(url, headers=headers) as resp:
+            assert resp.status == 200
+            req_list.append(await resp.text())
+
+
+# 异步下载排行榜图片
+def save_ranking_img_aio(ids, work_class, mode, multi, cookies, date_name):
+    printColor('采用异步模式,开始爬取,请稍后...', 'LIGHTBLUE')
+    url1 = 'http://www.pixiv.net/member_illust.php?mode=medium&illust_id='
+    url2 = 'http://www.pixiv.net/member_illust.php?mode=manga&illust_id='
+    # 分开多P和单P作品:
+    one_urls = []
+    multi_urls = []
+    index = 0
+    for work_type in work_class:
+        if work_type:
+            multi_urls.append(url2+ids[index])
+        else:
+            one_urls.append(url1+ids[index])
+        index += 1
+    loop = asyncio.get_event_loop()
+    one_req_list = []
+    multi_req_list = []
+    tasks = [get_ids_Page(host, mode, cookies, one_req_list) for host in one_urls]
+    if multi:
+        multi_tasks = [get_ids_Page(host, mode, cookies, multi_req_list) for host in multi_urls]
+        tasks.extend(multi_tasks)
+    # 获得所有作品页面的响应内容
+    loop.run_until_complete(asyncio.wait(tasks))
+
+    # 单P作品的原图链接提取
+    one_originals = []
+    one_original_pattern = re.compile(r'(?<=data-src=")\S*(?="\sclass="original-image")')
+    for one_req in one_req_list:
+        original_url = re.findall(one_original_pattern, one_req)
+        one_originals.append(original_url[0])
+    # 多P作品的原图链接提取
+    multi_originals = []
+    if multi:
+        multi_original_url_pattern = re.compile(
+            r'(?<=href=")\S*(?="\starget="_blank"\sclass="full-size-container _ui-tooltip")'
+        )
+        original_pattern = re.compile(r'(?<=src=")\S*(?=")')
+        for multi_req in multi_req_list:
+            # 单个多P作品中,单张图片的展示地址匹配
+            multi_original_item_urls = re.findall(multi_original_url_pattern, multi_req)
+            multi_original_item_urls = ['http://www.pixiv.net' + each_url for each_url in multi_original_item_urls]
+            req_list = []
+            tasks = [get_ids_Page(host, mode, cookies, req_list) for host in multi_original_item_urls]
+            loop.run_until_complete(asyncio.wait(tasks))
+            urls = []
+            for req in req_list:
+                urls.append(re.findall(original_pattern, req)[0])
+            multi_originals.append(urls)
+    else:
+        for i in range(len(multi_urls)):
+            multi_originals.append('')
+    printColor('爬取完毕 其中' + str(len(multi_urls)) + '个多P作品', 'LIGHTBLUE')
+
+    printColor('开始下载图片', 'LIGHTBLUE')
+    mode_path = mode + '_img'
+    download_path = os.path.join(mode_path, date_name)
+
+    # 创建对应日期的目录
+    if not os.path.exists(download_path):
+        os.makedirs(download_path)
+        printColor(date_name + '文件夹已存在', 'YELLOW')
+
+    # 原图链接整合
+    all_original_urls = []
+    for work_type in work_class:
+        if work_type:
+            all_original_urls.append(multi_originals[0])
+            del multi_originals[0]
+        else:
+            all_original_urls.append(one_originals[0])
+            del one_originals[0]
+
+    for url in all_original_urls:
+        print(url)
+
+    return
+
+    # 下载
+    for original in originals:
+        index = originals.index(original)
+        if original == '':
+            continue
+        if isinstance(original, list):
+            list_name = os.path.join(download_path, '#' + str(index + 1) + '_id=' + ids[index])
+            # 创建多P作品的文件夹
+            if not os.path.exists(list_name):
+                os.mkdir(list_name)
+            i = 1
+            for p in original:
+                pic = s.get(p)
+                format_pattern = re.compile(r'\.png')
+                if re.search(format_pattern, p):
+                    img_format = '.png'
+                else:
+                    img_format = '.jpg'
+                name = os.path.join(list_name, str(i) + img_format)
+                with open(name, 'wb') as f:
+                    f.write(pic.content)
+                i += 1
+        else:
+            pic = s.get(original)
+            format_pattern = re.compile(r'\.png')
+            if re.search(format_pattern, original):
+                img_format = '.png'
+            else:
+                img_format = '.jpg'
+            name = os.path.join(download_path, '#' + str(index + 1) + '_id=' + ids[index] + img_format)
+            with open(name, 'wb') as f:
+                f.write(pic.content)
+        printColor(ids[index] + ' done', 'GREEN')
+    printColor('下载完成', 'LIGHTBLUE')
+
+
+def save_ranking_img(ids, work_class, mode, multi, cookies, date_name):
     referer = 'http://www.pixiv.net/ranking.php?mode=' + mode
     headers = {
         'Referer': referer,
@@ -140,7 +279,7 @@ def save_ranking_img(ids, mode, multi, cookies, date_name):
             originals.append(original_url)
         else:
             originals.append(original_url[0])
-    printColor('爬取完毕 其中'+str(multi_num)+'个多P作品', 'LIGHTBLUE')
+    printColor('爬取完毕 其中' + str(multi_num) + '个多P作品', 'LIGHTBLUE')
 
     printColor('开始下载图片', 'LIGHTBLUE')
     mode_path = mode + '_img'
@@ -150,14 +289,14 @@ def save_ranking_img(ids, mode, multi, cookies, date_name):
     if not os.path.exists(download_path):
         os.makedirs(download_path)
 
-        printColor(date_name+'文件夹已存在', 'YELLOW')
+        printColor(date_name + '文件夹已存在', 'YELLOW')
     # 下载
     for original in originals:
         index = originals.index(original)
         if original == '':
             continue
         if isinstance(original, list):
-            list_name = os.path.join(download_path, '#'+str(index+1)+'_id='+ids[index])
+            list_name = os.path.join(download_path, '#' + str(index + 1) + '_id=' + ids[index])
             # 创建多P作品的文件夹
             if not os.path.exists(list_name):
                 os.mkdir(list_name)
@@ -169,7 +308,7 @@ def save_ranking_img(ids, mode, multi, cookies, date_name):
                     img_format = '.png'
                 else:
                     img_format = '.jpg'
-                name = os.path.join(list_name, str(i)+img_format)
+                name = os.path.join(list_name, str(i) + img_format)
                 with open(name, 'wb') as f:
                     f.write(pic.content)
                 i += 1
@@ -180,10 +319,10 @@ def save_ranking_img(ids, mode, multi, cookies, date_name):
                 img_format = '.png'
             else:
                 img_format = '.jpg'
-            name = os.path.join(download_path, '#'+str(index+1)+'_id='+ids[index]+img_format)
+            name = os.path.join(download_path, '#' + str(index + 1) + '_id=' + ids[index] + img_format)
             with open(name, 'wb') as f:
                 f.write(pic.content)
-        printColor(ids[index]+' done', 'GREEN')
+        printColor(ids[index] + ' done', 'GREEN')
     printColor('下载完成', 'LIGHTBLUE')
 
 
@@ -220,5 +359,5 @@ original     --原创排行榜
         if num == '':
             num = RANKING_NUM
         num = int(num)
-        ids, date = ranking(num, mode, my_cookies)
-        save_ranking_img(ids, mode, multi, my_cookies, date)
+        ids, date, work_class = ranking(num, mode, my_cookies)
+        save_ranking_img_aio(ids, work_class, mode, multi, my_cookies, date)
