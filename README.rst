@@ -1,6 +1,6 @@
 Pixivpy
 =======
-一个pixiv的简单爬虫脚本(GUI版)
+一个pixiv的简单爬虫脚本(带GUI版)
 
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
 
@@ -14,6 +14,13 @@ Requirements
 - requests
 - PyQt5
 
+Start
+-----
+执行GUI版,命令框内输入::
+ python pixivpy_test.py
+非GUI版::
+ python pixivpy.py
+
 LoginActivity
 -------------
 .. image:: https://raw.githubusercontent.com/XDfield/pixivpy/master/README_PIC/%E7%99%BB%E9%99%86%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE.png
@@ -21,7 +28,7 @@ LoginActivity
 Change Log
 ----------
 2017/03/09
- - 尝试了下PyQt5制作了个登陆界面,多P下载功能暂取消待测试
+ - 尝试了下PyQt5制作了个登陆界面,GUI版多P下载功能暂取消待测试
 2017/03/08
  - 完善排行榜分类选择(每日,每周,每月等)
 2017/03/07
